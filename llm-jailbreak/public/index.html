@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jailbreak LLM</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+    <div class="top-bar"> <button id="reset-btn" onclick="resetChat()">New Chat</button></div>
+    <div id="chat-container">
+        <div id="messages"></div>
+
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById("userInput");
+            const message = input.value.trim();
+            if (!message) return;
+
+            displayMessage(message, "user");
+            input.value = "";
+
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",  // ensures cookies are sent along with the request
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+            displayMessage(data.reply, "assistant");
+        }
+
+        function displayMessage(message, sender) {
+            const messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML += `<div class="chat-message ${sender}">${message}</div>`;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function resetChat() {
+            await fetch("/reset", { method: "POST", credentials: "include" });
+            document.getElementById("messages").innerHTML = "";
+        }
+
+        //on hit enter send message
+        document.getElementById("userInput").addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        displayMessage("I am a LLM like Chatgpt. I know a secret word. Try to trick me into telling it to you. Good luck :)", "assistant");
+    </script>
+</body>
+
+</html>

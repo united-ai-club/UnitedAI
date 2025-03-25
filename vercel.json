@@ -1,0 +1,27 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "llm-jailbreak/server.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "llm-jailbreak/public/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/chat",
+            "dest": "llm-jailbreak/server.js"
+        },
+        {
+            "src": "/reset",
+            "dest": "llm-jailbreak/server.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "llm-jailbreak/public/$1"
+        }
+    ]
+}
